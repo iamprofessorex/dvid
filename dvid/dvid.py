@@ -1,5 +1,6 @@
 # dvid.py
 
+import pathlib
 
 # ==================
 debugModeOn = True
@@ -9,11 +10,24 @@ debugModeOn = True
 ## Setting the current working directory automatically
 import os
 
-project_path = os.getcwd()  # getting the path leading to the current working directory
-os.getcwd()  # printing the path leading to the current working directory
-os.chdir(
-    project_path
-)  # setting the current working directory based on the path leading to the current working directory
+# Input data files are available in the "../input/" directory.
+# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory
+
+# https://stackoverflow.com/questions/39125532/file-does-not-exist-in-jupyter-notebook
+# /Users/<USER>/dev/universityofprofessorex/machine-learning-with-python
+# current_folder = globals()['_dh'][0]
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+_dir = pathlib.Path(HERE).resolve()
+
+project_path = f"{_dir}"  # getting the path leading to the current working directory
+print(f"_dir = {_dir}")
+# project_path = os.getcwd()  # getting the path leading to the current working directory
+# os.getcwd()  # printing the path leading to the current working directory
+# os.chdir(
+#     project_path
+# )  # setting the current working directory based on the path leading to the current working directory
 
 
 from argparse import ArgumentParser
@@ -60,7 +74,7 @@ from dvid.utils.utils import (
 )
 
 
-def run(project_path):
+def run(project_path=project_path):
     ## Parsing the input argument
     if not debugModeOn:
         # ---
@@ -77,7 +91,8 @@ def run(project_path):
             "--textFilePath",
             metavar="/path/to/your/text/file/my_text_file.txt",
             type=str,
-            default="clipboard",
+            # take off clipboard auto copy for now # default="clipboard",
+            default="",
             help="download the video(s) based on the URLs situated in the text file",
         )
         args = parser.parse_args()
@@ -89,7 +104,7 @@ def run(project_path):
     ## Initializations
 
     # Moving to the "Downloads" directory
-    os.chdir(DOWNLOAD_DIRECTORY)
+    # os.chdir(DOWNLOAD_DIRECTORY)
 
     # Initializing the number of unrecognized URLs to '0'
     number_of_unrecognized_urls = 0

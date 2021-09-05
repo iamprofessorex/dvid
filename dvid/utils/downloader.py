@@ -21,7 +21,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from termcolor import colored
 from webdriver_manager.chrome import ChromeDriverManager
-import youtube_dl  # pip3.7 install youtube_dl (version: youtube_dl 2020.12.9)
+import youtube_dl
 
 # Importing the constants defined in config.py
 import dvid.utils.config
