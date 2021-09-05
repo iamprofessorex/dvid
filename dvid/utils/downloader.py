@@ -951,9 +951,15 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
     print('3) Clicking on the "DOWNLOAD" button')
     # python_button = driver.find_element_by_xpath('//*[@id="icondl"]')
     # python_button.click()
+    # INFO: EC = expected_conditions
+    # INFO: BC = Set of supported locator strategies.
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="icondl"]'))
+        EC.presence_of_element_located((By.XPATH, '//*[@id="submiturl"]'))
     ).click()
+    # NOTE: Orig is below
+    # WebDriverWait(driver, 10).until(
+    #     EC.presence_of_element_located((By.XPATH, '//*[@id="icondl"]'))
+    # ).click()
 
     # 4) Getting source link from video tag
     print("4) Getting source link from video tag")
