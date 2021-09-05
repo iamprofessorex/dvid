@@ -7,3 +7,4 @@ pip-tools
 rich
 
 better_exceptions
+pydantic

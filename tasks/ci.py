@@ -765,7 +765,7 @@ pytest
         call(black, loc="local", check=False, tests=True),
         call(mypy, loc="local"),
         call(pylint, loc="local", everything=True),
-        call(pytest, loc="local"),
+        # call(pytest, loc="local"),
     ],
     incrementable=["verbose"],
 )
