@@ -71,6 +71,13 @@ Important points to notice:
 * pyenv activate dvid3
 * pip install -U pip setuptools
 * pip install pip-tools pipdeptree --upgrade
+*  make pip-compile
+*  make install-deps-all
+*  pip install -e .
+*  pyenv rehash
+*  inv ci.lint -vvvv
+*  dvid -h
+
 
 
 ### 2.2 Installing
@@ -82,11 +89,11 @@ Important points to notice:
 - To access useful help messages, type following Terminal command at the
   root of the project:
 
-  `python3.9 dvid.py -h`
+  `dvid -h`
 - To download a single video from a URL saved in the clipboard, issue following
   command at the root of the project:
 
-  `python3.9 dvid.py`
+  `dvid`
 
   The program will automatically get the clipboard stored
   URL and download its attached video.
@@ -95,7 +102,7 @@ Important points to notice:
   break, get the path of the text file and issue following command at the root
   of the project:
 
-  `python3.9 dvid.py --textFilePath /path/to/your/text/file/my_text_file.txt`
+  `dvid --textFilePath /path/to/your/text/file/my_text_file.txt`
 
   The program will automatically scroll through the list of URLs. For each URL,
   it will determine the source platform and retrieve the video using a
