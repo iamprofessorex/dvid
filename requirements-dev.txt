@@ -177,6 +177,8 @@ types-setuptools==57.0.2
     # via -r requirements-dev.in
 types-six==1.16.1
     # via -r requirements-dev.in
+types-termcolor==1.1.1
+    # via -r requirements-dev.in
 typing-extensions==3.10.0.2
     # via
     #   -c requirements.txt

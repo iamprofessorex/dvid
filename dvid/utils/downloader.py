@@ -20,6 +20,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from termcolor import colored
+from webdriver_manager.chrome import ChromeDriverManager
+import youtube_dl  # pip3.7 install youtube_dl (version: youtube_dl 2020.12.9)
+
 # Importing the constants defined in config.py
 import dvid.utils.config
 from dvid.utils.config import (
@@ -34,10 +37,8 @@ from dvid.utils.config import (
     SNAP_TIK,
     YTMP3_URL,
 )
-# Importing utility and webdriver functions defined in utils.py
+# Importing utility and webdriver functions defined in dvid.utils.py
 from dvid.utils.utils import add_date_and_metadata, write_in_log_text_file
-from webdriver_manager.chrome import ChromeDriverManager
-import youtube_dl  # pip3.7 install youtube_dl (version: youtube_dl 2020.12.9)
 
 ## Universal downloaders
 
@@ -260,7 +261,7 @@ def instagram_downloader(
     # ---
     driver.get(url)
 
-    if utils.config.firstTimeLoggedInInsta:
+    if dvid.utils.config.firstTimeLoggedInInsta:
         # Clicking on "Accept" to accept cookies from Instagram on the web driver
         print(' Clicking on "Accept All" to accept cookies from Instagram')
         try:
@@ -342,8 +343,8 @@ def instagram_downloader(
         )
         not_now_button.click()
 
-        # Setting the utils.config.firstTimeLoggedInInsta to False
-        utils.config.firstTimeLoggedInInsta = False
+        # Setting the dvid.utils.config.firstTimeLoggedInInsta to False
+        dvid.utils.config.firstTimeLoggedInInsta = False
 
     # Checking if error message at the top of the web page
     print(" Checking if error message at the top of the web page")
@@ -561,7 +562,7 @@ def facebook_downloader_1(url, driver, project_path):
         print("1) Navigating to the video URL itself")
         driver.get(url)
 
-        if utils.config.firstTimeFB1Alt:
+        if dvid.utils.config.firstTimeFB1Alt:
             # ---
             # 2) Clicking on "Accept All" (for accepting all cookies) (once it is present)
             print('2) Clicking on "Accept All"')
@@ -638,7 +639,7 @@ def facebook_downloader_1(url, driver, project_path):
             driver.get(url)
             # ---
 
-            utils.config.firstTimeFB1Alt = False
+            dvid.utils.config.firstTimeFB1Alt = False
             step_i = "9)"
             step_ii = "10)"
             step_iii = "11)"

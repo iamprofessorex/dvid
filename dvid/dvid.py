@@ -24,10 +24,10 @@ from tkinter import Tk  # to eventually access the string situated in the clipbo
 
 from termcolor import colored
 from tqdm import tqdm  # for having a nice progress bar
-# Importing the constants defined in config.py
-import utils.config
 from validator_collection import checkers  # to validate URLs
 
+# Importing the constants defined in config.py
+import dvid.utils.config
 from dvid.utils.config import DOWNLOAD_DIRECTORY
 # Importing the downloaders
 from dvid.utils.downloader import (

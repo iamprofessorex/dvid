@@ -16,9 +16,10 @@ import applescript
 from playsound import playsound
 from selenium import webdriver
 from termcolor import colored
-# Importing the constants defined in config.py
-from utils.config import DOWNLOAD_DIRECTORY, GOOGLE, TEAM_STAMA
 from webdriver_manager.chrome import ChromeDriverManager
+
+# Importing the constants defined in config.py
+from dvid.utils.config import DOWNLOAD_DIRECTORY, GOOGLE, TEAM_STAMA
 
 
 ## Removing empty lines from text file
