@@ -7,9 +7,13 @@
 bandit==1.7.0
     # via -r requirements-experimental.in
 certifi==2021.5.30
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 charset-normalizer==2.0.4
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 docutils==0.17.1
     # via pyroma
 gitdb==4.0.7
@@ -17,7 +21,9 @@ gitdb==4.0.7
 gitpython==3.1.18
     # via bandit
 idna==3.2
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 pbr==5.6.0
     # via stevedore
 pygments==2.10.0
@@ -29,9 +35,13 @@ pyroma==3.2
 pyyaml==5.4.1
     # via bandit
 requests==2.26.0
-    # via pyroma
+    # via
+    #   -c requirements.txt
+    #   pyroma
 six==1.16.0
-    # via bandit
+    # via
+    #   -c requirements.txt
+    #   bandit
 smmap==4.0.0
     # via gitdb
 stevedore==3.4.0

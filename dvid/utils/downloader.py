@@ -21,8 +21,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from termcolor import colored
 # Importing the constants defined in config.py
-import utils.config
-from utils.config import (
+import dvid.utils.config
+from dvid.utils.config import (
     DEFAULT_DOWNLOAD_DIRECTORY,
     DOWNLOAD_DIRECTORY,
     EXPERTS_PHP_INSTA,
@@ -35,7 +35,7 @@ from utils.config import (
     YTMP3_URL,
 )
 # Importing utility and webdriver functions defined in utils.py
-from utils.utils import add_date_and_metadata, write_in_log_text_file
+from dvid.utils.utils import add_date_and_metadata, write_in_log_text_file
 from webdriver_manager.chrome import ChromeDriverManager
 import youtube_dl  # pip3.7 install youtube_dl (version: youtube_dl 2020.12.9)
 

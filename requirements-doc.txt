@@ -10,6 +10,7 @@ atomicwrites==1.4.0
     # via pathlib-mate
 attrs==21.2.0
     # via
+    #   -c requirements.txt
     #   attrs-mate
     #   rstobj
 attrs-mate==1.0.0
@@ -19,9 +20,13 @@ autopep8==1.5.7
 babel==2.9.1
     # via sphinx
 certifi==2021.5.30
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 charset-normalizer==2.0.4
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 docfly==0.0.18
     # via -r requirements-doc.in
 docutils==0.17.1
@@ -29,7 +34,9 @@ docutils==0.17.1
     #   m2r
     #   sphinx
 idna==3.2
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 imagesize==1.2.0
     # via sphinx
 jinja2==3.0.1
@@ -58,11 +65,14 @@ pyparsing==2.4.7
 pytz==2021.1
     # via babel
 requests==2.26.0
-    # via sphinx
+    # via
+    #   -c requirements.txt
+    #   sphinx
 rstobj==0.0.7
     # via -r requirements-doc.in
 six==1.16.0
     # via
+    #   -c requirements.txt
     #   pathlib-mate
     #   rstobj
 snowballstemmer==2.1.0
@@ -77,7 +87,7 @@ sphinx-copybutton==0.4.0
     # via -r requirements-doc.in
 sphinx-jinja==1.1.1
     # via -r requirements-doc.in
-sphinx_rtd_theme==0.5.1
+sphinx-rtd-theme==0.5.1
     # via -r requirements-doc.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
