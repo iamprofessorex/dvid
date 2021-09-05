@@ -42,6 +42,7 @@ from dvid.utils.config import (
 )
 # Importing utility and webdriver functions defined in dvid.utils.py
 from dvid.utils.utils import add_date_and_metadata, write_in_log_text_file
+from dvid.utils import filenames
 
 LOGGER = get_logger(__name__, provider="Downloader", level=logging.DEBUG)
 
@@ -993,16 +994,12 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
     )
     req = Request(source_link, headers={"User-Agent": "XYZ/3.0"})
     response = urlopen(req, timeout=20).read()
-    # author_name_encoded = driver.find_element_by_xpath(
-    #     "/html/body/div[2]/section/div/div/div/article/div[3]/h1/a"
-    # )
+
     author_name_encoded = driver.find_element_by_xpath(
         "/html/body/main/section[2]/div/div/article/div[3]/h3"
     )
     author_name = author_name_encoded.text
-    # full_description_encoded = driver.find_element_by_xpath(
-    #     "/html/body/div[2]/section/div/div/div/article/div[3]/p[1]/span"
-    # )
+
     full_description_encoded = driver.find_element_by_xpath(
         "/html/body/main/section[2]/div/div/article/div[3]/p[1]/span"
     )
@@ -1014,9 +1011,15 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
     else:
         full_description_short = full_description
     video_name = author_name + " - " + full_description_short
-    file_name = DOWNLOAD_DIRECTORY + "/" + video_name + ".mp4"
-    LOGGER.debug(f"video_name = {video_name}")
+
+    sanitized_file_name = filenames.format_filename(video_name)
+    LOGGER.debug(f"sanitized_file_name = {sanitized_file_name}")
+
+    file_name = DOWNLOAD_DIRECTORY + "/" + sanitized_file_name + ".mp4"
     LOGGER.debug(f"file_name = {file_name}")
+
+
+
     f = open(file_name, "wb")
     f.write(response)
     f.close()
