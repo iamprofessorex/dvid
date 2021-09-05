@@ -500,3 +500,8 @@ setup-feature-flags:
 
 .PHONY: reset-dev-env
 reset-dev-env: pip-compile pip-sync install-deps-all install-editable
+
+.PHONY: install-selenium
+install-selenium:
+	brew install selenium-server-standalone
+

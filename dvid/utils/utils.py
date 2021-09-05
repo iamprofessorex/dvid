@@ -21,6 +21,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 # Importing the constants defined in config.py
 from dvid.utils.config import DOWNLOAD_DIRECTORY, GOOGLE, TEAM_STAMA
 
+import logging
+
+from dvid.dvid_logger import get_logger  # noqa: E402
+LOGGER = get_logger(__name__, provider="Utils", level=logging.DEBUG)
+
 
 ## Removing empty lines from text file
 def remove_empty_lines(file_path):
@@ -289,17 +294,27 @@ def notify(title, subtitle, message, sound_path):
 ## Webdriver setting functions
 def get_latest_webdriver():
     options = get_web_driver_options()
+    LOGGER.debug(f"options = {options}")
+    LOGGER.debug(f"options.binary_location = {options.binary_location}")
     # set_automation_as_head_less(options) # uncommenting this line makes the web driver run in the background (/!\ dvid.py is NOT conceived to work with the web driver running in the background, it has to be visible during the whole process! So please, leave this line commented!)
     set_ignore_certificate_error(options)
     set_browser_as_incognito(options)
     driver = get_chrome_web_driver(options)
+    LOGGER.debug(f"driver = {driver}")
     # Getting the resolution of the screen
     img = ImageGrab.grab()
     screen_width = img.size[0]
     screen_height = img.size[1]
+
+    LOGGER.debug(f"screen_width = {screen_width}")
+    LOGGER.debug(f"screen_height = {screen_height}")
+
     # Setting the size of the web driver window to half the size of the screen
     window_width = int(screen_width / 4)
     window_height = screen_height
+    LOGGER.debug(f"window_width = {window_width}")
+    LOGGER.debug(f"window_height = {window_height}")
+
     driver.set_window_size(
         window_width, window_height
     )  # (240, 160) # driver.minimize_window() # driver.maximize_window()
@@ -313,7 +328,7 @@ def get_latest_webdriver():
 
 def get_chrome_web_driver(options):
     # Using automatically the correct chromedriver by using the webdrive-manager (cf.: https://stackoverflow.com/questions/60296873/sessionnotcreatedexception-message-session-not-created-this-version-of-chrome)
-    return webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
+    return webdriver.Chrome(ChromeDriverManager(log_level=logging.DEBUG).install(), chrome_options=options)
 
 
 def get_web_driver_options():

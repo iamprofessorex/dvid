@@ -939,8 +939,11 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
 
     # 2) Entering the url under "Please insert a valid video URL"
     print('2) Entering the url under "Please insert a valid video URL"')
+    # python_field = driver.find_element_by_xpath(
+    #     "/html/body/div[1]/div/div/div/div/div/div/form/div/input"
+    # )
     python_field = driver.find_element_by_xpath(
-        "/html/body/div[1]/div/div/div/div/div/div/form/div/input"
+        "/html/body/main/section[1]/div[3]/div/div/form/div[2]/input"
     )
     python_field.send_keys(url)
 

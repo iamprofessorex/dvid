@@ -79,6 +79,14 @@ from dvid.utils.utils import (
 
 LOGGER = get_logger(__name__, provider="Dvid", level=logging.DEBUG)
 
+# Enable connection pool logging
+# SOURCE: https://docs.sqlalchemy.org/en/13/core/engines.html#dbengine-logging
+SELENIUM_LOGGER = logging.getLogger("selenium")
+SELENIUM_LOGGER.setLevel(logging.DEBUG)
+
+WEBDRIVER_MANAGER_LOGGER = logging.getLogger("webdriver_manager")
+WEBDRIVER_MANAGER_LOGGER.setLevel(logging.DEBUG)
+
 
 def run(project_path=project_path):
     ## Parsing the input argument

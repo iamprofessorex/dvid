@@ -76,6 +76,8 @@ Important points to notice:
 *  pip install -e .
 *  pyenv rehash
 *  inv ci.lint -vvvv
+*  brew install selenium-server-standalone
+*  /usr/local/opt/selenium-server-standalone/bin/selenium-server -port 4444 (do this in a new terminal)
 *  dvid -h
 
 
