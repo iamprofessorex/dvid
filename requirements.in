@@ -16,3 +16,4 @@ Pillow
 validator-collection
 youtube_dl
 PyObjC
+loguru

@@ -21,8 +21,10 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 _dir = pathlib.Path(HERE).resolve()
 
-project_path = f"{_dir}"  # getting the path leading to the current working directory
-print(f"_dir = {_dir}")
+project_path = (
+    f"{_dir.parent}"  # getting the path leading to the current working directory
+)
+print(f"_dir = {_dir.parent}")
 # project_path = os.getcwd()  # getting the path leading to the current working directory
 # os.getcwd()  # printing the path leading to the current working directory
 # os.chdir(
@@ -31,6 +33,7 @@ print(f"_dir = {_dir}")
 
 
 from argparse import ArgumentParser
+import logging
 ## Required packages
 import os
 import sys
@@ -40,6 +43,7 @@ from termcolor import colored
 from tqdm import tqdm  # for having a nice progress bar
 from validator_collection import checkers  # to validate URLs
 
+from dvid.dvid_logger import get_logger  # noqa: E402
 # Importing the constants defined in config.py
 import dvid.utils.config
 from dvid.utils.config import DOWNLOAD_DIRECTORY
@@ -72,6 +76,8 @@ from dvid.utils.utils import (
     sort_urls,
     write_in_log_text_file,
 )
+
+LOGGER = get_logger(__name__, provider="File Functions", level=logging.DEBUG)
 
 
 def run(project_path=project_path):
