@@ -77,7 +77,7 @@ from dvid.utils.utils import (
     write_in_log_text_file,
 )
 
-LOGGER = get_logger(__name__, provider="File Functions", level=logging.DEBUG)
+LOGGER = get_logger(__name__, provider="Dvid", level=logging.DEBUG)
 
 
 def run(project_path=project_path):

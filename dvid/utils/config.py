@@ -3,14 +3,14 @@
 # Configuration file in which some paths, URLs and other constants are defined
 
 
+import logging
 import os
 ## Required packages
 from pathlib import Path
 
-import logging
 from dvid.dvid_logger import get_logger  # noqa: E402
 
-LOGGER = get_logger(__name__, provider="File Functions", level=logging.DEBUG)
+LOGGER = get_logger(__name__, provider="Config", level=logging.DEBUG)
 
 
 ## Initialization of the first time using facebook_downloader_1 alternative

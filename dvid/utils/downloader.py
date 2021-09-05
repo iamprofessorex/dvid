@@ -5,6 +5,7 @@
 
 
 import glob
+import logging
 ## Required packages
 import os
 import re
@@ -17,12 +18,14 @@ from urllib.request import Request, urlopen
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from termcolor import colored
 from webdriver_manager.chrome import ChromeDriverManager
 import youtube_dl
 
+from dvid.dvid_logger import get_logger  # noqa: E402
 # Importing the constants defined in config.py
 import dvid.utils.config
 from dvid.utils.config import (
@@ -40,10 +43,12 @@ from dvid.utils.config import (
 # Importing utility and webdriver functions defined in dvid.utils.py
 from dvid.utils.utils import add_date_and_metadata, write_in_log_text_file
 
+LOGGER = get_logger(__name__, provider="Downloader", level=logging.DEBUG)
+
 ## Universal downloaders
 
 # Using you-get (cf.: https://github.com/soimort/you-get, https://pypi.org/project/you-get/0.3.8/) (pip3 install you-get)
-def universal_downloader_you_get(url):
+def universal_downloader_you_get(url: str):
 
     # 1) Issuing the you-get Terminal command
     print("1) Issuing the you-get Terminal command")
@@ -101,7 +106,7 @@ def universal_downloader_you_get(url):
 
 
 # Using youtube_dl
-def universal_downloader_youtube_dl(url):
+def universal_downloader_youtube_dl(url: str):
     number_of_mp4_files_already_in_DOWNLOAD_DIRECTORY = len(
         glob.glob1(DOWNLOAD_DIRECTORY, "*.mp4")
     )
@@ -512,7 +517,7 @@ def instagram_downloader(
 
 
 ## Twitter downloader
-def twitter_downloader(url):
+def twitter_downloader(url: str):
     universal_downloader_you_get(url)
 
 
@@ -923,7 +928,10 @@ def linkedin_downloader(url, driver):
 
 
 ## TikTok downloader
-def tiktok_downloader(url, driver):
+def tiktok_downloader(url: str, driver: RemoteWebDriver):
+
+    LOGGER.debug(f"url = {url}")
+    LOGGER.debug(f"driver = {driver}")
 
     # 1) Navigating to SNAP_TIK
     print("1) Navigating to SNAP_TIK")
@@ -995,7 +1003,7 @@ def tiktok_downloader(url, driver):
 
 
 ## Twitch downloader
-def twitch_downloader(url):
+def twitch_downloader(url: str):
 
     # 1) Adjusting the video URL
     print("1) Adjusting the video URL")
@@ -1008,7 +1016,7 @@ def twitch_downloader(url):
 
 
 ## Vimeo downloader
-def vimeo_downloader(url):
+def vimeo_downloader(url: str):
     universal_downloader_you_get(url)
 
 
