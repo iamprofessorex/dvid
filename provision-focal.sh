@@ -354,20 +354,20 @@ set +x;
 cd ~/dev && \
 git clone https://github.com/bossjones/bosslab-playbooks || true && \
 cd bosslab-playbooks && \
-pyenv virtualenv 3.9.0 ansible3 || true  && \
+pyenv virtualenv $PYENV_VERSION ansible3 || true  && \
 pyenv activate ansible3 || true  && \
 pyenv rehash && \
 sed -i '/ansigenome/d' requirements.in && \
 sed -i '/ansible-inventory-grapher/d' requirements.in && \
 sed -i '/ansible-playbook-grapher/d' requirements.in && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/python -m pip install -U pip setuptools || true  && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/python -m pip install pip-tools pipdeptree --upgrade || true  && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/pip-compile --output-file requirements.txt requirements.in --upgrade && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/pip-compile --output-file requirements-dev.txt requirements-dev.in --upgrade && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/pip-compile --output-file requirements-test.txt requirements-test.in --upgrade && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/python -m pip install -r requirements.txt && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/python -m pip install -r requirements-dev.txt && \
-/.pyenv/versions/3.9.0/envs/ansible3/bin/python -m pip install -r requirements.txt && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/python -m pip install -U pip setuptools || true  && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/python -m pip install pip-tools pipdeptree --upgrade || true  && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/pip-compile --output-file requirements.txt requirements.in --upgrade && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/pip-compile --output-file requirements-dev.txt requirements-dev.in --upgrade && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/pip-compile --output-file requirements-test.txt requirements-test.in --upgrade && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/python -m pip install -r requirements.txt && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/python -m pip install -r requirements-dev.txt && \
+/.pyenv/versions/$PYENV_VERSION/envs/ansible3/bin/python -m pip install -r requirements.txt && \
 cd -
 
 pyenv rehash
