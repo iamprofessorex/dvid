@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.7
+
 
 # downloader.py
 
@@ -211,7 +211,7 @@ def instagram_downloader(number_of_unrecognized_urls, url, textFileAsInput, driv
 
     #---
     driver.get(url)
-    
+
     if utils.config.firstTimeLoggedInInsta:
         # Clicking on "Accept" to accept cookies from Instagram on the web driver
         print(' Clicking on "Accept All" to accept cookies from Instagram')
@@ -227,12 +227,12 @@ def instagram_downloader(number_of_unrecognized_urls, url, textFileAsInput, driv
         except Exception as e:
             #print(colored('Warning!\n', 'cyan'), 'Web element "Accept" button not found. Error message: ', e)
             print(colored('Warning!\n', 'cyan'), 'Web element "Accept All" button not found. Error message: ', e)
-    
+
         # Clicking on "Log In"
         print(' Clicking on "Log In"')
         python_button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div/div/div/div[3]/div[1]/a')))
         python_button.click()
-    
+
         # Entering Entering personal Instagram credentials
         print(' Entering personal Instagram credentials')
         instagram_credentials_text_file = open(project_path + '/utils/instagram_credentials.txt')
@@ -244,26 +244,26 @@ def instagram_downloader(number_of_unrecognized_urls, url, textFileAsInput, driv
         username_field.send_keys(username)
         password_field = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginForm"]/div/div[2]/div/label/input')))
         password_field.send_keys(password)
-    
+
         # Clicking on the "Log In" button
         print(' Clicking on the "Log In" button')
         log_in_button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginForm"]/div/div[3]/button/div')))
         log_in_button.click()
-    
+
         # Clicking on the "Not Now" button
         print(' Clicking on the "Not Now" button')
         not_now_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/div/div/div/button')))
         not_now_button.click()
-    
+
         # Clicking on the second "Not Now" button
         print(' Clicking on the second "Not Now" button')
         #not_now_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[4]/div/div/div/div[3]/button[2]')))
         not_now_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div/div/div/div[3]/button[2]')))
         not_now_button.click()
-    
+
         # Setting the utils.config.firstTimeLoggedInInsta to False
         utils.config.firstTimeLoggedInInsta = False
-    
+
     # Checking if error message at the top of the web page
     print(' Checking if error message at the top of the web page')
     if "Sorry" in driver.page_source: # if the Instagram post is not available anymore
@@ -274,7 +274,7 @@ def instagram_downloader(number_of_unrecognized_urls, url, textFileAsInput, driv
             # Adding this URL to the log text file
             write_in_log_text_file("\n\n⚠️ Issue with URL n°{0}:\n".format(number_of_unrecognized_urls) + url + "\nThis Instagram post is not available anymore!")
     #---
-    
+
     else: # if the Instagram post still exists
         print(' ✅ Instagram post available')
 

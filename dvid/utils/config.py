@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.7
+
 
 # config.py
 
@@ -7,6 +7,7 @@
 
 ## Required packages
 from pathlib import Path
+import os
 
 
 ## Initialization of the first time using facebook_downloader_1 alternative
@@ -16,7 +17,7 @@ firstTimeLoggedInInsta = True
 
 
 ## Configurations
-DOWNLOAD_DIRECTORY = '/Users/anthony/Downloads' # name of the folder in which we will put the downloaded video files (this can be adjusted by the user)
+DOWNLOAD_DIRECTORY = os.path.expanduser("~/Downloads")  # name of the folder in which we will put the downloaded video files (this can be adjusted by the user)
 DEFAULT_DOWNLOAD_DIRECTORY = str(Path.home() / "Downloads")
 GOOGLE = 'https://www.google.com/'
 TEAM_STAMA = 'https://www.teamstama.com/'
