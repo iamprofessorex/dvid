@@ -26,6 +26,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import youtube_dl
 
 from dvid.dvid_logger import get_logger  # noqa: E402
+from dvid.utils import filenames
 # Importing the constants defined in config.py
 import dvid.utils.config
 from dvid.utils.config import (
@@ -42,7 +43,6 @@ from dvid.utils.config import (
 )
 # Importing utility and webdriver functions defined in dvid.utils.py
 from dvid.utils.utils import add_date_and_metadata, write_in_log_text_file
-from dvid.utils import filenames
 
 LOGGER = get_logger(__name__, provider="Downloader", level=logging.DEBUG)
 
@@ -1017,8 +1017,6 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
 
     file_name = DOWNLOAD_DIRECTORY + "/" + sanitized_file_name + ".mp4"
     LOGGER.debug(f"file_name = {file_name}")
-
-
 
     f = open(file_name, "wb")
     f.write(response)
