@@ -961,17 +961,27 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
     #     EC.presence_of_element_located((By.XPATH, '//*[@id="icondl"]'))
     # ).click()
 
+    # //*[@id="snaptik-video"]/article/div[2]/div/a[1]
     # 4) Getting source link from video tag
     print("4) Getting source link from video tag")
     source_link = (
         WebDriverWait(driver, 10)
         .until(
             EC.presence_of_element_located(
-                (By.CSS_SELECTOR, "#download-block > div > a:nth-child(1)")
+                (By.CSS_SELECTOR, "#snaptik-video > div > a:nth-child(1)")
             )
         )
         .get_attribute("href")
     )
+    # source_link = (
+    #     WebDriverWait(driver, 10)
+    #     .until(
+    #         EC.presence_of_element_located(
+    #             (By.CSS_SELECTOR, "#download-block > div > a:nth-child(1)")
+    #         )
+    #     )
+    #     .get_attribute("href")
+    # )
 
     # 5) Retrieving video using urllib.request
     # (I.e. downloading the TikTok post)
