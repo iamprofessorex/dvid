@@ -963,25 +963,27 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
 
     # //*[@id="snaptik-video"]/article/div[2]/div/a[1]
     # 4) Getting source link from video tag
+    # css=#download-block .abutton:nth-child(1) > .span-icon > span
     print("4) Getting source link from video tag")
-    source_link = (
-        WebDriverWait(driver, 10)
-        .until(
-            EC.presence_of_element_located(
-                (By.CSS_SELECTOR, "#snaptik-video > div > a:nth-child(1)")
-            )
-        )
-        .get_attribute("href")
-    )
     # source_link = (
     #     WebDriverWait(driver, 10)
     #     .until(
     #         EC.presence_of_element_located(
-    #             (By.CSS_SELECTOR, "#download-block > div > a:nth-child(1)")
+    #             (By.CSS_SELECTOR, "#download-block .abutton:nth-child(1) > .span-icon > span")
     #         )
     #     )
     #     .get_attribute("href")
     # )
+
+    source_link = (
+        WebDriverWait(driver, 10)
+        .until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "#download-block > div > a:nth-child(1)")
+            )
+        )
+        .get_attribute("href")
+    )
 
     # 5) Retrieving video using urllib.request
     # (I.e. downloading the TikTok post)
@@ -991,14 +993,21 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
     )
     req = Request(source_link, headers={"User-Agent": "XYZ/3.0"})
     response = urlopen(req, timeout=20).read()
+    # author_name_encoded = driver.find_element_by_xpath(
+    #     "/html/body/div[2]/section/div/div/div/article/div[3]/h1/a"
+    # )
     author_name_encoded = driver.find_element_by_xpath(
-        "/html/body/div[2]/section/div/div/div/article/div[3]/h1/a"
+        "/html/body/main/section[2]/div/div/article/div[3]/h3"
     )
     author_name = author_name_encoded.text
+    # full_description_encoded = driver.find_element_by_xpath(
+    #     "/html/body/div[2]/section/div/div/div/article/div[3]/p[1]/span"
+    # )
     full_description_encoded = driver.find_element_by_xpath(
-        "/html/body/div[2]/section/div/div/div/article/div[3]/p[1]/span"
+        "/html/body/main/section[2]/div/div/article/div[3]/p[1]/span"
     )
     full_description = full_description_encoded.text
+    LOGGER.debug(f"full_description = {full_description}")
     # Bounding the size of "full_description"
     if len(full_description) > 50:
         full_description_short = full_description[0:50]
@@ -1006,6 +1015,8 @@ def tiktok_downloader(url: str, driver: RemoteWebDriver):
         full_description_short = full_description
     video_name = author_name + " - " + full_description_short
     file_name = DOWNLOAD_DIRECTORY + "/" + video_name + ".mp4"
+    LOGGER.debug(f"video_name = {video_name}")
+    LOGGER.debug(f"file_name = {file_name}")
     f = open(file_name, "wb")
     f.write(response)
     f.close()
