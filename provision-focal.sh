@@ -471,7 +471,8 @@ export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 kubectl krew
 
-sudo apt-get install rustc -y
+sudo apt-get install rustc ripgrep -y
+
 
 # install-cgroup-tools.sh
 install-code-shell-tmux.sh
@@ -488,7 +489,7 @@ install-kubebox.sh pi
 install-rbenv.sh
 install-tmux.sh
 install-vim.sh
-install-neovim-config.sh
+install-neovim-config.sh pi
 install-cheat.sh pi
 
 cd ansible-role-oh-my-zsh
