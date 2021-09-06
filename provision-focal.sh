@@ -572,7 +572,7 @@ cat <<EOF >~/dev/ansible-role-postgresql/site.yml
     - { type: local, database: all, user: all, auth_method: peer }
     - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
     - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }
-    - { type: host, database: all, user: all, address: '192.168.0.1/16', auth_method: trust }
+    - { type: host, database: all, user: all, address: '192.168.1.0/16', auth_method: trust }
 
     postgresql_databases:
       - name: kubernetes
@@ -580,7 +580,7 @@ cat <<EOF >~/dev/ansible-role-postgresql/site.yml
         # lc_ctype: # defaults to 'en_US.UTF-8'
         # encoding: # defaults to 'UTF-8'
         # template: # defaults to 'template0'
-        login_host: "192.168.0.13" # defaults to 'localhost'
+        login_host: "192.168.1.62" # defaults to 'localhost'
         login_password: "password" # defaults to not set
         # login_user: # defaults to '{{ postgresql_user }}'
         # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
@@ -592,7 +592,7 @@ cat <<EOF >~/dev/ansible-role-postgresql/site.yml
         # lc_ctype: # defaults to 'en_US.UTF-8'
         # encoding: # defaults to 'UTF-8'
         # template: # defaults to 'template0'
-        login_host: "192.168.0.13" # defaults to 'localhost'
+        login_host: "192.168.1.62" # defaults to 'localhost'
         login_password: "password" # defaults to not set
         # login_user: # defaults to '{{ postgresql_user }}'
         # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
@@ -618,7 +618,7 @@ cat <<EOF >~/dev/ansible-role-postgresql/site.yml
             # lc_ctype: # defaults to 'en_US.UTF-8'
             # encoding: # defaults to 'UTF-8'
             # template: # defaults to 'template0'
-            login_host: "192.168.0.13" # defaults to 'localhost'
+            login_host: "192.168.1.62" # defaults to 'localhost'
             login_password: "password" # defaults to not set
             # login_user: # defaults to '{{ postgresql_user }}'
             # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
@@ -630,7 +630,7 @@ cat <<EOF >~/dev/ansible-role-postgresql/site.yml
             # lc_ctype: # defaults to 'en_US.UTF-8'
             # encoding: # defaults to 'UTF-8'
             # template: # defaults to 'template0'
-            login_host: "192.168.0.13" # defaults to 'localhost'
+            login_host: "192.168.1.62" # defaults to 'localhost'
             login_password: "password" # defaults to not set
             # login_user: # defaults to '{{ postgresql_user }}'
             # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
@@ -662,11 +662,11 @@ cd -
 # /etc/systemd/system/k3s.service.d/30-certificates.conf
 sudo mkdir -p /etc/systemd/system/k3s.service.d/
 echo '[Service]' | sudo tee /etc/systemd/system/k3s.service.d/override.conf
-echo "Environment=K3S_DATASTORE_ENDPOINT=postgres://pi:password@192.168.0.16:5432/k3s" | sudo tee /etc/systemd/system/k3s.service.d/override.conf
-# echo "Environment=K3S_URL=https://192.168.0.16:6443" | sudo tee /etc/systemd/system/k3s.service.d/override.conf
+echo "Environment=K3S_DATASTORE_ENDPOINT=postgres://pi:password@192.168.1.62:5432/k3s" | sudo tee /etc/systemd/system/k3s.service.d/override.conf
+# echo "Environment=K3S_URL=https://192.168.1.62:6443" | sudo tee /etc/systemd/system/k3s.service.d/override.conf
 
-# how to connect to posgres: pgcli postgres://pi:password@192.168.0.13:5432/k3s
-# -tls-san 192.168.0.16
+# how to connect to posgres: pgcli postgres://pi:password@192.168.1.62:5432/k3s
+# -tls-san 192.168.1.62
 
 cd ~/dev
 git clone https://github.com/k3s-io/k3s-ansible || true
@@ -677,16 +677,16 @@ k3s_version: v1.21.4+k3s1
 ansible_user: pi
 systemd_dir: /etc/systemd/system
 master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
-extra_server_args: "-tls-san 192.168.0.16"
+extra_server_args: "-tls-san 192.168.1.62"
 extra_agent_args: ""
 EOF
 
 cat <<EOF >~/dev/k3s-ansible/inventory/my-cluster/hosts.ini
-192.168.0.16 ansible_ssh_host=lab1 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.0.16 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+192.168.1.62 ansible_ssh_host=192.168.1.62 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.1.62 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
 
-192.168.0.14 ansible_ssh_host=lab2 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.0.14 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+192.168.1.63 ansible_ssh_host=192.168.1.63 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.1.63 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
 
-192.168.0.15 ansible_ssh_host=lab3 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.0.15 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+192.168.1.64 ansible_ssh_host=192.168.1.64 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.1.64 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
 
 ; k3lab-node-03.dev.home ansible_ssh_host=k3lab-node-03 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.1.16 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
 
@@ -698,13 +698,13 @@ localhost ansible_connection=local
 localhost ansible_connection=local
 
 [lab1]
-192.168.0.16
+192.168.1.62
 
 [lab2]
-192.168.0.14
+192.168.1.63
 
 [lab3]
-192.168.0.15
+192.168.1.64
 
 ; [k3lab-node-03]
 ; k3lab-node-03.dev.home
@@ -819,3 +819,8 @@ windows:
 
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/ets-labs/python-vimrc/master/setup.sh)"
 EOF
+
+sudo apt-get install libpcre2-dev -y
+sudo apt-get install -y automake pkg-config libpcre3-dev zlib1g-dev liblzma-dev
+
+echo 'network: {config: disabled}' | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
