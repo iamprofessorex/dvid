@@ -541,7 +541,240 @@ export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 kubectl krew
 
-sudo apt-get install rustc ripgrep -y
+sudo apt-get install rustc ripgrep xclip urlview -y
+
+cd ~/dev
+git clone https://github.com/facebook/PathPicker.git
+cd PathPicker/debian
+./package.sh
+sudo dpkg -i ../pathpicker_0.9.2_all.deb
+cd -
+
+sudo /sbin/sysctl -w net.ipv4.ip_forward="1"
+sudo /sbin/sysctl -w net.ipv6.conf.all.forwarding="1"
+
+cd ~/dev
+git clone https://github.com/geerlingguy/ansible-role-postgresql.git || true
+cat <<EOF >~/dev/ansible-role-postgresql/site.yml
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    postgresql_python_library: python3-psycopg2
+    postgresql_global_config_options:
+        - option: listen_addresses
+          value: '*'
+    postgresql_hba_entries:
+    - { type: local, database: all, user: postgres, auth_method: peer }
+    - { type: local, database: all, user: all, auth_method: peer }
+    - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
+    - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }
+    - { type: host, database: all, user: all, address: '192.168.0.1/16', auth_method: trust }
+
+    postgresql_databases:
+      - name: kubernetes
+        # lc_collate: # defaults to 'en_US.UTF-8'
+        # lc_ctype: # defaults to 'en_US.UTF-8'
+        # encoding: # defaults to 'UTF-8'
+        # template: # defaults to 'template0'
+        login_host: "192.168.0.13" # defaults to 'localhost'
+        login_password: "password" # defaults to not set
+        # login_user: # defaults to '{{ postgresql_user }}'
+        # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
+        port: 5432 # defaults to not set
+        # owner: # defaults to postgresql_user
+        # state: # defaults to 'present'
+      - name: k3s
+        # lc_collate: # defaults to 'en_US.UTF-8'
+        # lc_ctype: # defaults to 'en_US.UTF-8'
+        # encoding: # defaults to 'UTF-8'
+        # template: # defaults to 'template0'
+        login_host: "192.168.0.13" # defaults to 'localhost'
+        login_password: "password" # defaults to not set
+        # login_user: # defaults to '{{ postgresql_user }}'
+        # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
+        port: 5432 # defaults to not set
+        # owner: # defaults to postgresql_user
+        # state: # defaults to 'present'
+    postgresql_users:
+      - name: postgres
+        password: "password"
+        login_password: "password"
+      - name: pi
+        password: "password"
+        login_password: "password"
+    postgres_users_no_log: false
+
+  pre_tasks:
+    # The Fedora 30+ container images have only C.UTF-8 installed
+    - name: Set database locale if using Fedora 30+ or RedHat 8+
+      set_fact:
+        postgresql_databases:
+          - name: kubernetes
+            # lc_collate: # defaults to 'en_US.UTF-8'
+            # lc_ctype: # defaults to 'en_US.UTF-8'
+            # encoding: # defaults to 'UTF-8'
+            # template: # defaults to 'template0'
+            login_host: "192.168.0.13" # defaults to 'localhost'
+            login_password: "password" # defaults to not set
+            # login_user: # defaults to '{{ postgresql_user }}'
+            # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
+            port: 5432 # defaults to not set
+            # owner: # defaults to postgresql_user
+            # state: # defaults to 'present'
+          - name: k3s
+            # lc_collate: # defaults to 'en_US.UTF-8'
+            # lc_ctype: # defaults to 'en_US.UTF-8'
+            # encoding: # defaults to 'UTF-8'
+            # template: # defaults to 'template0'
+            login_host: "192.168.0.13" # defaults to 'localhost'
+            login_password: "password" # defaults to not set
+            # login_user: # defaults to '{{ postgresql_user }}'
+            # login_unix_socket: # defaults to 1st of postgresql_unix_socket_directories
+            port: 5432 # defaults to not set
+            # owner: # defaults to postgresql_user
+            # state: # defaults to 'present'
+      when:
+        - ( ansible_distribution == 'Fedora' and ansible_distribution_major_version >= '30') or
+          ( ansible_os_family == 'RedHat' and ansible_distribution_major_version == '8')
+
+    - name: Update apt cache.
+      apt: update_cache=true cache_valid_time=600
+      changed_when: false
+      when: ansible_os_family == 'Debian'
+
+  roles:
+    - role: ../
+
+  post_tasks:
+    - name: Verify postgres is running.
+      command: "{{ postgresql_bin_path }}/pg_ctl -D {{ postgresql_data_dir }} status"
+      changed_when: false
+      become: true
+      become_user: postgres
+EOF
+
+cd -
+
+# /etc/systemd/system/k3s.service.d/30-certificates.conf
+sudo mkdir -p /etc/systemd/system/k3s.service.d/
+echo '[Service]' | sudo tee /etc/systemd/system/k3s.service.d/override.conf
+echo "Environment=K3S_DATASTORE_ENDPOINT=postgres://pi:password@192.168.0.16:5432/k3s" | sudo tee /etc/systemd/system/k3s.service.d/override.conf
+# echo "Environment=K3S_URL=https://192.168.0.16:6443" | sudo tee /etc/systemd/system/k3s.service.d/override.conf
+
+# how to connect to posgres: pgcli postgres://pi:password@192.168.0.13:5432/k3s
+# -tls-san 192.168.0.16
+
+cd ~/dev
+git clone https://github.com/k3s-io/k3s-ansible || true
+cp -R k3s-ansible/inventory/sample k3s-ansible/inventory/my-cluster
+cat <<EOF >~/dev/k3s-ansible/inventory/my-cluster/group_vars/all.yml
+---
+k3s_version: v1.21.4+k3s1
+ansible_user: pi
+systemd_dir: /etc/systemd/system
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
+extra_server_args: "-tls-san 192.168.0.16"
+extra_agent_args: ""
+EOF
+
+cat <<EOF >~/dev/k3s-ansible/inventory/my-cluster/hosts.ini
+192.168.0.16 ansible_ssh_host=lab1 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.0.16 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+
+192.168.0.14 ansible_ssh_host=lab2 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.0.14 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+
+192.168.0.15 ansible_ssh_host=lab3 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.0.15 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+
+; k3lab-node-03.dev.home ansible_ssh_host=k3lab-node-03 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.1.16 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+
+; k3lab-node-04.dev.home ansible_ssh_host=k3lab-node-04 ansible_ssh_private_key_file=~/.ssh/id_rsa ip=192.168.1.32 ansible_ssh_port=22 ansible_ssh_user='pi' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o ControlMaster=auto -o ControlPersist=60s -o ControlPath=~/.ansible/cp/ansible-ssh-%h-%p-%r' boss__kubernetes__kubeadm__server_type=master is_master=true
+
+localhost ansible_connection=local
+
+[local]
+localhost ansible_connection=local
+
+[lab1]
+192.168.0.16
+
+[lab2]
+192.168.0.14
+
+[lab3]
+192.168.0.15
+
+; [k3lab-node-03]
+; k3lab-node-03.dev.home
+
+; [k3lab-node-04]
+; k3lab-node-04.dev.home
+
+
+# CHILDREN
+[master:children]
+lab1
+
+[masters:children]
+lab1
+
+[node:children]
+lab2
+lab3
+; k3lab-node-03
+; k3lab-node-04
+
+[k3s_cluster:children]
+master
+node
+
+[servers:children]
+masters
+
+[all:children]
+servers
+
+[rsyslogd_masters:children]
+lab1
+
+[rsyslogd_clients:children]
+lab1
+
+
+[nfs_masters:children]
+lab1
+
+[nfs_clients:children]
+lab1
+
+
+[influxdb:children]
+lab1
+
+[graphite-master1:children]
+lab1
+
+# groups of groups = children
+[graphite-master-servers:children]
+graphite-master1
+
+[netdata_registry:children]
+masters
+
+[netdata_nodes:children]
+lab1
+
+
+
+EOF
+
+# K3S_TOKEN=SECRET
+
+
+sudo systemctl stop kubelet
+sudo systemctl disable kubelet
 
 
 # install-cgroup-tools.sh
@@ -566,5 +799,23 @@ install-node.sh
 cd ansible-role-oh-my-zsh
 sudo ansible-playbook -vvvvv -i "localhost," -c local playbook_ubuntu_pure.yml --extra-vars="bossjones__oh__my__zsh__user=pi bossjones__oh__my__zsh__theme=pure"
 
+mkdir -p ~/.tmuxinator || true
+cat <<EOF >~/.tmuxinator/zsh.yml
+# ~/.tmuxinator/zsh.yml
+name: zsh
+root: ~/
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: exec zsh -l
+
+windows:
+  - neofetch:
+      layout: 9fa4,223x75,0,0{118x75,0,0[118x52,0,0{59x52,0,0,8,58x52,60,0,13},118x22,0,53,12],104x75,119,0[104x16,119,0,1,104x15,119,17,9,104x22,119,33,2,104x19,119,56,3]}
+      panes:
+        - neofetch:
+          - neofetch
+
+
 
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/ets-labs/python-vimrc/master/setup.sh)"
+EOF
