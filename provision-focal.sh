@@ -16,6 +16,9 @@ echo \
 "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
 $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
+echo \
+"pi ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/90-pi
+
 apt-get update
 # apt-get install -y docker-ce docker-ce-cli containerd.io
 
@@ -122,7 +125,7 @@ echo "fs.file-max = 2097152" | tee -a /etc/sysctl.d/openai_perf.conf
 sysctl -p
 mkdir -p ~pi/dev
 ls -lta ~pi/dev
-git clone https://github.com/bossjones/debug-tools /usr/local/src/debug-tools
+git clone https://github.com/bossjones/debug-tools /usr/local/src/debug-tools || true
 /usr/local/src/debug-tools/update-bossjones-debug-tools
 chown pi:pi -Rv ~pi
 apt-get install software-properties-common -y
@@ -371,5 +374,93 @@ sed -i '/ansible-playbook-grapher/d' requirements.in && \
 cd -
 
 pyenv rehash
+
+sudo apt-get install -y fzf jq rbenv silversearcher-ag tmux tree direnv
+
+cd ~/dev && \
+git clone https://github.com/bossjones/ansible-role-oh-my-zsh || true && \
+git clone https://github.com/bossjones/linux-dotfiles ~/.dotfiles || true
+
+
+# ansible run fails if we don't have this
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf || true && \
+~/.fzf/install --all
+
+
+sudo touch /usr/local/bin/install-config
+sudo chown pi:pi /usr/local/bin/install-config
+cat <<EOF >/usr/local/bin/install-config
+export PYENV_VERSIONS_TO_INSTALL="3.9.0\n"
+export PYENV_ROOT=/.pyenv
+export PATH="${PYENV_ROOT}/bin:${PYENV_ROOT}/shims:$PATH"
+export RBENV_ROOT=~/.rbenv
+export RBENV_VERSION=2.6.6
+export NODE_VERSION_TO_INSTALL=10.3.0
+export PATH="$HOME/.fnm:${RBENV_ROOT}/shims:${RBENV_ROOT}/bin:$PATH"
+EOF
+cat /usr/local/bin/install-config
+
+# fnm
+export NODE_VERSION_TO_INSTALL=10.3.0
+install-fnm.sh
+
+# add it to root as well
+if ! sudo grep -q 'export PATH=/home/pi/.fnm:$PATH' /root/.bashrc ; then\
+    echo 'export PATH=/home/pi/.fnm:$PATH' | sudo tee -a /root/.bashrc ;\
+    export PATH=/home/pi/.fnm:$PATH ;\
+fi
+if ! sudo grep -q 'eval "`fnm env`"' /root/.bashrc ; then\
+    echo 'eval "`fnm env`"'  | sudo tee -a /root/.bashrc  ;\
+    eval "`fnm env`" ;\
+fi
+
+sudo cat /root/.bashrc
+
+
+exec "$SHELL"
+
+echo "[kube-install] Installing Kubernetes" && \
+sudo apt-get update && apt-get install -y apt-transport-https curl && \
+sudo apt-get update && \
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add && \
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main" && \
+sudo apt-get update  && \
+sudo apt-get install -y kubeadm kubelet kubectl kubernetes-cni
+
+# export K8S_STABLE=$(curl -L -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+# echo ${K8S_STABLE}
+# # install kubectl convert plugin
+# curl -LO https://dl.k8s.io/release/${K8S_STABLE}/bin/linux/amd64/kubectl-convert
+# curl -LO "https://dl.k8s.io/${K8S_STABLE}/bin/linux/amd64/kubectl-convert.sha256"
+# echo "$(<kubectl-convert.sha256) ./kubectl-convert" | sha256sum --check
+# sudo install -o root -g root -m 0755 kubectl-convert /usr/local/bin/kubectl-convert
+# kubectl convert --help
+
+(
+  set -x; cd "$(mktemp -d)" &&
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz" &&
+  tar zxvf krew.tar.gz &&
+  KREW=./krew-"${OS}_${ARCH}" &&
+  "$KREW" install krew
+)
+
+if ! grep -q 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' ~/.zshrc ; then\
+    echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"'  | tee -a ~/.zshrc  ;\
+    export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH" ;\
+fi
+if ! grep -q 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' ~/.bashrc ; then\
+    echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"'  | tee -a ~/.bashrc  ;\
+    export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH" ;\
+fi
+
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+kubectl krew
+
+cd ansible-role-oh-my-zsh
+sudo ansible-playbook -vvvvv -i "localhost," -c local playbook_ubuntu_pure.yml --extra-vars="bossjones__oh__my__zsh__user=pi bossjones__oh__my__zsh__theme=pure"
+
 
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/ets-labs/python-vimrc/master/setup.sh)"
