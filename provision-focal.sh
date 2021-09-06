@@ -458,6 +458,75 @@ sudo apt-get install -y kubeadm kubelet kubectl kubernetes-cni
   "$KREW" install krew
 )
 
+# vim ~/.zsh.d/before/krew.zsh
+if ! grep -q 'export PATH="${PATH}:${HOME}/.krew/bin"' ~/.zsh.d/before/krew.zsh ; then\
+    echo 'export PATH="${PATH}:${HOME}/.krew/bin"'  | tee -a ~/.zsh.d/before/krew.zsh  ;\
+    export PATH="${PATH}:${HOME}/.krew/bin" ;\
+fi
+
+# vim ~/.zsh.d/before/krew.zsh
+if ! grep -q 'export PATH="${PATH}:${HOME}/.krew/bin"' "${BASHRC_FILE}"; then\
+    echo 'export PATH="${PATH}:${HOME}/.krew/bin"'  | tee -a "${BASHRC_FILE}" ;\
+    export PATH="${PATH}:${HOME}/.krew/bin" ;\
+fi
+
+
+exec "$SHELL"
+
+
+
+kubectl krew install janitor
+kubectl krew install mtail
+kubectl krew install node-restart
+kubectl krew index add kvaps kvaps/krew-index
+kubectl krew install kvaps/node-shell
+kubectl krew install np-viewer
+kubectl krew install outdated
+kubectl krew install exec-as
+kubectl krew install prompt
+kubectl krew install prune-unused
+kubectl krew install rbac-view
+kubectl krew install service-tree
+kubectl krew install sniff
+kubectl krew install socks5-proxy
+kubectl krew install spy
+kubectl krew install tmux-exec
+kubectl krew install trace
+kubectl krew install tree
+kubectl krew install unused-volumes
+kubectl krew install view-cert
+kubectl krew install view-secret
+kubectl krew install view-utilization
+kubectl krew install who-can
+kubectl krew install whoami
+kubectl krew install blame
+kubectl krew install mtail
+kubectl krew install ca-cert
+kubectl krew install view-secret
+kubectl krew install capture
+kubectl krew install cert-manager
+kubectl krew install cilium
+kubectl krew install cyclonus
+kubectl krew install deprecations
+curl https://krew.sh/df-pv | bash
+kubectl krew install doctor
+kubectl krew install exec-cronjob
+kubectl krew install flame
+kubectl krew install gadget
+kubectl krew install get-all
+kubectl krew install graph
+kubectl krew install grep
+kubectl krew install images
+kubectl krew install access-matrix
+kubectl krew install assert
+
+
+
+
+kubectl plugin list
+
+
+
 if ! grep -q 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' ~/.zshrc ; then\
     echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"'  | tee -a ~/.zshrc  ;\
     export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH" ;\
