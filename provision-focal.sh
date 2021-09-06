@@ -2,6 +2,10 @@
 
 export INTERFACE_DEVICE_NAME="ens33"
 
+OS=$(uname -s)
+ARCH=$(uname -m)
+_whoami=$(whoami)
+
 apt-get update
 apt-get -y install \
     apt-transport-https \
@@ -126,6 +130,8 @@ sysctl -p
 mkdir -p ~pi/dev
 ls -lta ~pi/dev
 git clone https://github.com/bossjones/debug-tools /usr/local/src/debug-tools || true
+sudo chown -R ${_whoami}:${_whoami} /usr/local/bin
+sudo chown -R ${_whoami}:${_whoami} /usr/local/src/debug-tools
 /usr/local/src/debug-tools/update-bossjones-debug-tools
 chown pi:pi -Rv ~pi
 apt-get install software-properties-common -y
@@ -199,11 +205,11 @@ asdf plugin-add kubetail https://github.com/janpieper/asdf-kubetail.git
 # asdf install goss 0.3.13
 # asdf global goss 0.3.13
 
-asdf install fd 8.1.1
-asdf global fd 8.1.1
+# asdf install fd 8.1.1
+# asdf global fd 8.1.1
 
-asdf install k9s 0.24.15
-asdf global k9s 0.24.15
+# asdf install k9s 0.24.15
+# asdf global k9s 0.24.15
 
 asdf install kubetail 1.6.13
 asdf global kubetail 1.6.13
@@ -314,6 +320,8 @@ sudo chown -Rv pi:pi ${PYENV_ROOT}
 
 source ${BASHRC_FILE}
 
+git clone https://github.com/pyenv/pyenv-virtualenvwrapper.git $(pyenv root)/plugins/pyenv-virtualenvwrapper || true
+
 set -x;
 sudo apt-get update && \
     sudo apt-get install -y --no-install-recommends \
@@ -403,6 +411,10 @@ cat /usr/local/bin/install-config
 # fnm
 export NODE_VERSION_TO_INSTALL=10.3.0
 install-fnm.sh
+export PATH=/home/pi/.fnm:$PATH
+eval "`fnm env`"
+exec "$SHELL"
+
 
 # add it to root as well
 if ! sudo grep -q 'export PATH=/home/pi/.fnm:$PATH' /root/.bashrc ; then\
@@ -458,6 +470,26 @@ fi
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 kubectl krew
+
+sudo apt-get install rustc -y
+
+# install-cgroup-tools.sh
+install-code-shell-tmux.sh
+install-compile-tools.sh
+install-ctags.sh
+# install-ctop.sh
+install-fonts.sh
+install-fx.sh
+install-go.sh
+install-goss.sh
+install-jid.sh pi
+install-kubebox.sh pi
+# install-powerline-fonts.sh
+install-rbenv.sh
+install-tmux.sh
+install-vim.sh
+install-neovim-config.sh
+install-cheat.sh pi
 
 cd ansible-role-oh-my-zsh
 sudo ansible-playbook -vvvvv -i "localhost," -c local playbook_ubuntu_pure.yml --extra-vars="bossjones__oh__my__zsh__user=pi bossjones__oh__my__zsh__theme=pure"
