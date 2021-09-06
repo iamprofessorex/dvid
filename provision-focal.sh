@@ -491,6 +491,7 @@ install-tmux.sh
 install-vim.sh
 install-neovim-config.sh pi
 install-cheat.sh pi
+install-node.sh
 
 cd ansible-role-oh-my-zsh
 sudo ansible-playbook -vvvvv -i "localhost," -c local playbook_ubuntu_pure.yml --extra-vars="bossjones__oh__my__zsh__user=pi bossjones__oh__my__zsh__theme=pure"
