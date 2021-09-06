@@ -519,6 +519,7 @@ kubectl krew install grep
 kubectl krew install images
 kubectl krew install access-matrix
 kubectl krew install assert
+kubectl krew install ingress-nginx
 
 
 
